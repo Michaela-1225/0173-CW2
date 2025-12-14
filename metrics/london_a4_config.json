@@ -1,0 +1,26 @@
+{
+  "seed": 42,
+  "option": "B (Sentinel-2 RGB+NIR: B2,B3,B4,B8)",
+  "feature_idx": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "label_idx": -1,
+  "batch_size": 4,
+  "epochs": 40,
+  "early_stopping_patience": 8,
+  "lr_candidates": [
+    0.0001,
+    0.0005
+  ],
+  "loss_candidates": [
+    "bce_dice",
+    "focal"
+  ],
+  "estimated_pos_rate_train": 0.034322265625,
+  "best_run_id": "uk_london_rgbn_focal_lr5e-04",
+  "best_ckpt_path": "/Users/liuyuxin/Downloads/0173-CW2-main/models/uk_london_rgbn_focal_lr5e-04_best.keras",
+  "note": "Loss uses imbalance-aware objectives; model uses corrected attention skip and standard 1x1 sigmoid head."
+}
