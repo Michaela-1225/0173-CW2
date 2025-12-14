@@ -1,36 +1,124 @@
-# MSc Data Science Dissertation/Project
+# COMP0173 Coursework 2  
+## Attention U-Net for Urban Green Space Loss Detection (UK Case Study)
 
-**An Attention-Based U-Net for Detecting Deforestation Within Satellite Sensor Imagery.** 
-https://www.sciencedirect.com/science/article/pii/S0303243422000113
+This repository contains the implementation and experimental code for **COMP0173 Coursework 2 – AI for Sustainable Development** at UCL.
 
-## Datasets
-### Amazon 1 (Regular 3-dim Dataset) -- https://zenodo.org/record/3233081
-### Amazon 2 (Larger 4-band Amazon and Atlantic Datasets) -- https://zenodo.org/record/4498086#.YMh3GfKSmCU
+The project replicates an Attention U-Net–based remote sensing segmentation framework and adapts it to a **UK urban context**, focusing on woodland and green space loss detection in Greater London using Sentinel-2 satellite imagery.
 
-## Files
-+ **dataset** -- Folder of original dataset from Regular Dataset.
-+ **figures** -- Figures for report (amazon-atlantic-forest-mapjpg.jpg from https://pubmed.ncbi.nlm.nih.gov/20433744/).
-  + **shapefiles** -- Shapefiles for map. Amazon Shapefile from: (http://worldmap.harvard.edu/data/geonode:amapoly_ivb), rest from: (http://terrabrasilis.dpi.inpe.br/en/download-2/).
-+ **models** -- Folder of each of the three types of Attention U-Net model; load into Keras using 'load_model([modelfilename])'.
-+ **metrics** -- Folder of metrics (accuracy, precision, recall, F1-score) for each result.
-+ Experimentation.ipynb -- Jupyter notebook of data processing, augmentation, model training and testing.
-+ Figures.ipynb -- Jupyter notebook of figures found in **figures**.
-+ predictor.py -- Takes any input RGB or 4-band image and outputs Attention U-Net-predicted deforestation mask to file.
-+ preprocess-4band-amazon-data.py -- Python script to preprocess GeoTIFFs from 4-band Amazon Dataset and export as numpy pickles.
-+ preprocess-4band-atlantic-forest-data.py -- Python script to preprocess GeoTIFFs from 4-band Atlantic Forest Dataset and export as numpy pickles.
-+ preprocess-rgb-data.py -- Python script to preprocess data in RGB Dataset and export as numpy pickles.
-+ requirements.txt -- Required Python libraries.
+---
 
-## How to use
-### Obtaining Attention U-Net Deforestation Masks
-+ Run pip -r requirements.txt to install libraries.
-+ Download 'unet-attention-3d.hdf5', 'unet-attention-4d.hdf5' and 'unet-attention-4d-atlantic.hdf5' models, and place in same directory as script.
-+ Run 'python predictor.py [MODEL IDENTIFIER] [INPUT IMAGE PATH]' or 'python3 predictor.py [MODEL IDENTIFIER] [INPUT IMAGE PATH]'.
-  + Model identifier for RGB is 1, 4-band Amazon-trained is 2, 4-band Atlantic Forest-trained is 3.
-  + e.g. Get mask prediction of image named 'test.tif' from 4-band Amazon model: 'python predictor.py 2 test.tif'.
+## Overview
 
-### Obtaining Pre-Processed Data
-+ Run pip -r requirements.txt to install libraries.
-+ Run 'preprocess-4band-amazon-data.py' to pre-process 4-band Amazon data.
-+ Run 'preprocess-4band-atlantic-forest-data.py' to pre-process 4-band Atlantic Forest data.
-+ Run 'preprocess-rgb-data.py' to pre-process RGB Amazon data.
+The original study applies an Attention U-Net architecture to large-scale forest segmentation tasks using Sentinel-2 imagery.  
+In this coursework, the methodology is transferred to a new geographic and semantic context characterised by:
+
+- Urban–rural mixed land cover  
+- Fragmented and small target regions  
+- Severe class imbalance  
+- Weak (proxy) supervision derived from NDVI change  
+
+The primary objective is to **evaluate the transferability of the model architecture and training pipeline**, rather than to maximise absolute segmentation performance.
+
+---
+
+## Environment Setup
+
+This project is implemented in **Python 3** using TensorFlow/Keras.
+
+### Dependencies
+
+Key dependencies include:
+- Python ≥ 3.8  
+- TensorFlow ≥ 2.x  
+- NumPy  
+- OpenCV  
+- Rasterio / GDAL (for geospatial preprocessing)  
+- Google Earth Engine Python API (for data acquisition)
+
+A full list of dependencies is documented in the notebooks.
+
+---
+
+## Data Preparation
+
+### Sentinel-2 Imagery
+- Source: Sentinel-2 MSI Level-2A (surface reflectance)
+- Bands used:  
+  - B2 (Blue)  
+  - B3 (Green)  
+  - B4 (Red)  
+  - B8 (NIR)  
+- Spatial resolution: 10 m
+
+### Study Area
+- Area of Interest: Greater London  
+- Time windows:
+  - T1: Summer 2018  
+  - T2: Summer 2023  
+
+### Proxy Labels
+Ground-truth labels are generated using **NDVI difference thresholding** between T1 and T2 to identify potential vegetation loss.  
+These labels are treated as **weak (proxy) supervision**, rather than manually annotated ground truth.
+
+---
+
+## Model Architecture
+
+- Architecture: **Attention U-Net**
+- Input channels: RGB + NIR (4 channels)
+- Base filter size: 16
+- Attention gates applied on all skip connections
+- Output: single-channel sigmoid segmentation map
+
+The model is trained **from scratch** to isolate architectural transferability without reliance on pretrained backbones.
+
+---
+
+## Training and Evaluation
+
+### Training Configuration
+- Optimiser: Adam  
+- Loss functions evaluated:
+  - Binary Cross-Entropy + Dice loss
+  - Focal loss (γ = 2.0, α = 0.25)
+- Learning rates: 1e-4, 5e-4
+- Early stopping and model checkpointing enabled
+
+### Evaluation Metrics
+- Intersection over Union (IoU)
+- F1-score (Dice coefficient)
+- Precision and Recall
+
+Pixel accuracy is reported for reference only due to severe class imbalance.
+
+---
+
+## Reproducibility
+
+To support reproducibility:
+- Fixed random seeds are used
+- Deterministic train/validation/test splits are applied
+- Hyperparameters, metrics, and checkpoints are logged
+
+---
+
+## Notes on Pretraining
+
+This project intentionally avoids pretrained backbones to focus on **architectural transferability under limited data and weak supervision**.  
+While pretraining could improve absolute performance, it would confound evaluation of architecture-level transfer across domains.
+
+---
+
+## Disclaimer
+
+This repository is provided for **academic assessment purposes only**.  
+Results should be interpreted as a methodological case study rather than a production-ready monitoring system.
+
+---
+
+## Author
+
+COMP0173 Coursework 2  
+University College London
+
+
