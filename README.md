@@ -9,7 +9,8 @@ The project replicates an Attention U-Net–based remote sensing segmentation fr
 
 ## Overview
 
-The original study by John and Zhang (2022) applies an Attention U-Net architecture to large-scale forest segmentation tasks using Sentinel-2 imagery.  
+The original study **An attention-based U-Net for detecting deforestation within satellite
+sensor imagery** by John and Zhang (2022) applies an Attention U-Net architecture to large-scale forest segmentation tasks using Sentinel-2 imagery.  
 In this coursework, the methodology is transferred to a new geographic and semantic context characterised by:
 
 - Urban–rural mixed land cover  
